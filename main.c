@@ -7,7 +7,8 @@
 #include <termio.h>
 #include <assert.h>
 
-#define TEST 0
+#define TEST 1
+#define MAX_LEN 100
 
 unsigned long int TimeCompare(int hour, int minuate);
 void ShowHelp();
@@ -34,14 +35,13 @@ int main(int argc, char* argv[]){
 
     //open file
 
-    if(TEST){
-        if((sfd = open("/dev/ttyAMA0", O_RDWR | O_NOCTTY)) == -1){
-            fprintf(stderr, "err : Device not detected");
-            return -1;
-        }
+    if(!(TEST)){
+        printf("Initializing...\n");
+        sfd = open("/dev/ttyAMA0", O_RDWR | O_NOCTTY);
+        assert(sfd != -1);
 
-        struct termio newtio;
-        memset(&newtio,0,sizeof(struct termio));
+        struct termios newtio;
+        memset(&newtio, 0, sizeof(struct termios));
         newtio.c_cflag = B9600 | CS8 | CLOCAL | CREAD;
         newtio.c_iflag = IGNPAR | ICRNL;
         newtio.c_oflag = 0;
@@ -49,11 +49,25 @@ int main(int argc, char* argv[]){
 
         tcflush(sfd, TCIFLUSH);
         tcsetattr(sfd, TCSANOW, &newtio);
+        printf("Done.\n");
     }  
+
+    char receive[MAX_LEN];
+    int readSize = 0;
+
+    write(sfd,"OK",2);
+    while(1){
+        readSize = read(sfd,receive,MAX_LEN);
+        //printf("%d ", readSize);    
+        if(readSize == 2){
+            printf("%s. Ready.\n",receive);
+            break;
+        } 
+    }
 
     char *av[10] = {NULL, };
     int ac = 0, i = 0;
-    char command[100];
+    char command[MAX_LEN];
 
 
     printf("Enter the Command.\nIf you check the menual, type 'help'.\n");
@@ -65,7 +79,8 @@ int main(int argc, char* argv[]){
         }
 
         printf("> ");
-        gets(command);
+        fgets(command,MAX_LEN,stdin);
+        command[strlen(command)-1]='\0';
 
         char *ptr;
         ptr = strtok(command, " ");
@@ -133,6 +148,12 @@ int main(int argc, char* argv[]){
         //remove
             if((remove("./schedule"))==0)printf("remove success\n");
             else printf("remove fail\n");
+        }
+
+    
+        else if(!(strcmp(av[0], "exit"))){
+            close(fd);
+            break;
         }
 
         else{
