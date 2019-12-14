@@ -6,6 +6,7 @@
 #include <time.h>
 #include <termio.h>
 #include <assert.h>
+#include <signal.h>
 
 #define TEST 0
 #define MAX_LEN 100
@@ -65,9 +66,7 @@ int main(int argc, char* argv[]){
             break;
         } 
     }
-    
-
-
+\
     printf("Enter the Command.\nIf you check the menual, type 'help'.\n");
 
     while(1){
@@ -181,6 +180,10 @@ int main(int argc, char* argv[]){
             let = write(sfd,"L #000000",9);
             assert(let == 9);
         }
+
+        else if(!(strcmp(av[0], "clear"))){
+            printf("%c[2J", 27 );
+        }
     
         else if(!(strcmp(av[0], "exit"))){
             close(fd);
@@ -243,6 +246,7 @@ void ShowHelp(){
     fprintf(stderr, "- Setting Lamp Alarm : set [hour] [minuate]\n");
     fprintf(stderr, "- Confirm Lamp Alarm : confirm\n");
     fprintf(stderr, "- Remove Lamp Alarm : remove\n");
+    fprintf(stderr, "- Clear this consol : clear\n");
     fprintf(stderr, "- Stop this Program : exit\n");
 
 }
