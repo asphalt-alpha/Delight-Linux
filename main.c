@@ -23,6 +23,8 @@ unsigned long int TimeCompare(int hour, int minuate);
 void SetColor(RGB* rgb, int type, char* r, char* g, char* b);
 void ShowHelp();
 
+void alarmFinish();
+void alarmStart();
 
 int main(int argc, char* argv[]){
     int fd, sfd, let;
@@ -66,7 +68,7 @@ int main(int argc, char* argv[]){
             break;
         } 
     }
-\
+
     printf("Enter the Command.\nIf you check the menual, type 'help'.\n");
 
     while(1){
@@ -200,6 +202,18 @@ int main(int argc, char* argv[]){
 
     close(sfd);
     return 0;
+}
+
+void alarmStart(){
+        printf("start\n");
+        signal(SIGALRM, alarmFinish);
+        alarm(5);
+}
+
+void alarmFinish(){
+        printf("finish\n");
+        signal(SIGALRM, alarmStart);
+        alarm(5);
 }
 
 void SetColor(RGB* rgb, int type, char* r, char* g, char* b){
