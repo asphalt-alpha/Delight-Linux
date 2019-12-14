@@ -124,7 +124,7 @@ int main(int argc, char* argv[]){
                 printf("Setting Failed. Try again.\n");
             }
         }
-        
+
         //confirm : exeption
         else if(!(strcmp(av[0], "confirm"))){
             if(ac!=1){
